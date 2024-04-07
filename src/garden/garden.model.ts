@@ -1,0 +1,39 @@
+import { BelongsTo, BelongsToMany, Column, DataType, ForeignKey, Model, Table } from "sequelize-typescript";
+import { Rent } from "src/rent/rent.model";
+import { User } from "src/user/user.model";
+
+
+@Table
+export class Garden extends Model{
+    
+    @Column({primaryKey: true , type: DataType.UUID})
+    gardenID: string;
+
+    @Column({type: DataType.UUID})
+    @ForeignKey(()=>User)
+    ownerID: string
+
+    @Column({allowNull:false})
+    title: string;
+    
+    @Column({allowNull: false})
+    description: string;
+    
+    @Column({allowNull:false})
+    size: number;
+
+    @Column({allowNull:false})
+    location: string;
+
+    @Column({allowNull: false , type: DataType.FLOAT})
+    hourPrice: number;
+
+    @Column({allowNull:true})
+    image: string;
+
+    @BelongsToMany(()=>User , ()=> Rent)
+    renters: User[];
+
+    @BelongsTo(()=>User)
+    poster: User;
+}

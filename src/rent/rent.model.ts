@@ -6,7 +6,7 @@ import { User } from "src/user/user.model";
 @Table({paranoid:true})
 export class Rent extends Model{
     
-    @Column({primaryKey: true , type: DataType.UUID})
+    @Column({primaryKey: true , type: DataType.UUID , defaultValue: DataType.UUIDV4})
     rentID: string;
 
     @Column({type: DataType.UUID})

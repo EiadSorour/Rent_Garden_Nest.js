@@ -6,7 +6,7 @@ import { Rent } from "src/rent/rent.model";
 @Table
 export class User extends Model{
     
-    @Column({primaryKey: true , type: DataType.UUID})
+    @Column({primaryKey: true , type: DataType.UUID , defaultValue: DataType.UUIDV4})
     userID: string;
 
     @Column({allowNull:false , unique: true})
@@ -15,10 +15,10 @@ export class User extends Model{
     @Column({allowNull: false})
     password: string;
     
-    @Column({allowNull:false})
-    role: number;
+    @Column({allowNull:false}) 
+    role: string;
     
-    @Column({allowNull:true})
+    @Column({allowNull:true , type: DataType.FLOAT})
     moneyOwned: number;
 
     @BelongsToMany(()=>Garden , ()=> Rent)

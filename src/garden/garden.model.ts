@@ -6,7 +6,7 @@ import { User } from "src/user/user.model";
 @Table
 export class Garden extends Model{
     
-    @Column({primaryKey: true , type: DataType.UUID})
+    @Column({primaryKey: true , type: DataType.UUID , defaultValue: DataType.UUIDV4})
     gardenID: string;
 
     @Column({type: DataType.UUID})
@@ -19,12 +19,12 @@ export class Garden extends Model{
     @Column({allowNull: false})
     description: string;
     
-    @Column({allowNull:false})
+    @Column({allowNull:false , type: DataType.FLOAT})
     size: number;
 
     @Column({allowNull:false})
     location: string;
-
+    
     @Column({allowNull: false , type: DataType.FLOAT})
     hourPrice: number;
 

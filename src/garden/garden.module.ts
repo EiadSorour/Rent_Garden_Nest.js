@@ -9,6 +9,6 @@ import { Garden } from "./garden.model";
     imports: [SequelizeModule.forFeature([Garden])],
     controllers: [GardenController],
     providers: [GardenService],
-    exports: []
+    exports: [GardenService]
 })
 export class GardenModule{}

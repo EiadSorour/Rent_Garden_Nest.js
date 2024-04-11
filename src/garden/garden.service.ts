@@ -3,10 +3,32 @@ import { AddGardenDto } from "./dto/addGarden.dto";
 import { InjectModel } from "@nestjs/sequelize";
 import { Garden } from "./garden.model";
 import { UpdateGardenDto } from "./dto/updateGarden.dto";
+import { Op } from "sequelize";
 
 @Injectable()
 export class GardenService{
     constructor(@InjectModel(Garden) private readonly gardenModel: typeof Garden){}
+
+    async getOtherGardens(userID:string): Promise<Garden[]>{
+        // Pagination here
+        const otherGardens:Garden[] = await this.gardenModel.findAll({where: {ownerID: { [Op.ne]: userID }} })
+        return otherGardens;
+    }
+
+    async getUserGardens(ownerID:string): Promise<Garden[]>{
+        // Pagination here
+        const userGardens:Garden[] = await this.gardenModel.findAll({where: {ownerID:ownerID}});
+        return userGardens;
+    }
+
+    async getGarden(gardenID:string): Promise<Garden>{
+        const garden:Garden = await this.gardenModel.findOne({where: {gardenID:gardenID}});
+        if(!garden){
+            throw new HttpException("Garden doesn't exist" , HttpStatus.NOT_FOUND);
+        }
+        
+        return garden;
+    }
 
     async addGarden(addGardenDto: AddGardenDto): Promise<Garden>{
         const createdGarden:Garden = await this.gardenModel.create(addGardenDto as any);
@@ -24,17 +46,8 @@ export class GardenService{
         }
     }
 
-    async getUserGardens(ownerID:string): Promise<Garden[]>{
-        const userGardens:Garden[] = await this.gardenModel.findAll({where: {ownerID:ownerID}});
-        return userGardens;
-    }
-
     async deleteGarden(gardenID:string): Promise<number>{
         const deletedGardens:number = await this.gardenModel.destroy({where: {gardenID:gardenID}});
-        // if(deletedGardens === 0){
-        //     throw new HttpException("This garden doesn't exist" , HttpStatus.NOT_FOUND);
-        // }
-
         return deletedGardens;
     }
 

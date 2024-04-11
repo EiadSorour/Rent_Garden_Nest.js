@@ -1,9 +1,8 @@
-import { IsNotEmpty, IsNumberString, IsOptional, IsString, IsUUID } from "class-validator";
+import { IsEmpty, IsNotEmpty, IsNumberString, IsOptional, IsString, IsUUID } from "class-validator";
 
 export class AddGardenDto{
     
-    @IsUUID()
-    @IsOptional()
+    @IsEmpty()
     ownerID: string;
 
     @IsString()

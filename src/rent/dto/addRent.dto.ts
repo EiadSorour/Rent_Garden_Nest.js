@@ -1,17 +1,23 @@
-import { IsDate, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsDate, IsDateString, IsEmpty, IsNotEmpty, IsNumber, IsUUID } from "class-validator";
 
 export class AddRentDto{
     
-    @IsString()
+    @IsEmpty()
+    userID: string;
+
+    @IsUUID()
     @IsNotEmpty()
     gardenID: string;
 
-    @IsDate()
+    @IsDateString()
     @IsNotEmpty()
     fromDate: Date;
     
-    @IsDate()
+    @IsDateString()
     @IsNotEmpty()
     toDate: Date;
+
+    @IsEmpty()
+    cost: number;
 
 }

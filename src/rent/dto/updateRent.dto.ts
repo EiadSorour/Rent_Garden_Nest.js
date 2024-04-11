@@ -1,20 +1,20 @@
-import { IsDate, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsDate, IsDateString, IsNumber, IsOptional, IsUUID } from "class-validator";
 
 export class UpdateRentDto{
     
-    @IsString()
+    @IsUUID()
     @IsOptional()
     userID: string;
 
-    @IsString()
+    @IsUUID()
     @IsOptional()
     gardenID: string;
     
-    @IsDate()
+    @IsDateString()
     @IsOptional()
     fromDate: Date;
     
-    @IsDate()
+    @IsDateString()
     @IsOptional()
     toDate: Date;
     

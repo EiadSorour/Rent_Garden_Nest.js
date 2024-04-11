@@ -16,7 +16,7 @@ export class AuthService{
     async login(@Body() userLoginDto:UserLoginDto): Promise<string>{
         const user:User = await this.userService.getUser(userLoginDto.username);
         if(!user){
-            throw new HttpException("User doesn't exist" , HttpStatus.BAD_REQUEST);
+            throw new HttpException("User doesn't exist" , HttpStatus.NOT_FOUND);
         }
 
         const correctPassword:boolean = await bcrypt.compare(userLoginDto.password , user.password);

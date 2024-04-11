@@ -1,4 +1,4 @@
-import { Body, HttpException, Injectable } from "@nestjs/common";
+import { Body, HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { UserService } from "src/user/user.service";
 import { UserLoginDto } from "./dto/userLogin.dto";
@@ -16,27 +16,29 @@ export class AuthService{
     async login(@Body() userLoginDto:UserLoginDto): Promise<string>{
         const user:User = await this.userService.getUser(userLoginDto.username);
         if(!user){
-            throw new HttpException("User doesn't exist" , 100);
+            throw new HttpException("User doesn't exist" , HttpStatus.BAD_REQUEST);
         }
 
         const correctPassword:boolean = await bcrypt.compare(userLoginDto.password , user.password);
         if(!correctPassword){
-            throw new HttpException("Incorrect password",100);
+            throw new HttpException("Incorrect password",HttpStatus.UNAUTHORIZED);
         }
 
-        const payload = {username: user.username , role: user.role};
+        const payload = {id: user.userID , username: user.username , role: user.role};
         return this.jwtService.sign(payload);
     }
 
     async register(@Body() userRegisterDto:UserRegisterDto): Promise<string>{
         const oldUser:User = await this.userService.getUser(userRegisterDto.username);
         if(oldUser){
-            throw new HttpException("User already exists" , 100);
+            throw new HttpException("User already exists" , HttpStatus.BAD_REQUEST);
         }
         
         userRegisterDto.password = await bcrypt.hash(userRegisterDto.password , 10);
         await this.userService.addUser(userRegisterDto);
-        const payload = {username: userRegisterDto.username , role: userRegisterDto.role};
+        
+        const user = await this.userService.getUser(userRegisterDto.username);
+        const payload = {id: user.userID , username: user.username , role: user.role};
         return this.jwtService.sign(payload);
     }
 }

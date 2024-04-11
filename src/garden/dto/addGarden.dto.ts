@@ -1,7 +1,11 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsNotEmpty, IsNumberString, IsOptional, IsString, IsUUID } from "class-validator";
 
 export class AddGardenDto{
     
+    @IsUUID()
+    @IsOptional()
+    ownerID: string;
+
     @IsString()
     @IsNotEmpty()
     title: string;
@@ -10,7 +14,7 @@ export class AddGardenDto{
     @IsNotEmpty()
     description: string;
     
-    @IsNumber()
+    @IsNumberString()
     @IsNotEmpty()
     size: number;
     
@@ -18,7 +22,7 @@ export class AddGardenDto{
     @IsNotEmpty()
     location: string;
     
-    @IsNumber()
+    @IsNumberString()
     @IsNotEmpty()
     hourPrice: number;
     

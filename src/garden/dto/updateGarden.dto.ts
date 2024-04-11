@@ -1,6 +1,6 @@
-import { IsNumber, IsOptional, IsString } from "class-validator";
+import { IsNumberString, IsOptional, IsString } from "class-validator";
 
-export class AddGardenDto{
+export class UpdateGardenDto{
     
     @IsString()
     @IsOptional()
@@ -10,7 +10,7 @@ export class AddGardenDto{
     @IsOptional()
     description: string;
     
-    @IsNumber()
+    @IsNumberString()
     @IsOptional()
     size: number;
     
@@ -18,7 +18,7 @@ export class AddGardenDto{
     @IsOptional()
     location: string;
     
-    @IsNumber()
+    @IsNumberString()
     @IsOptional()
     hourPrice: number;
     

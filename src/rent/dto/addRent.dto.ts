@@ -1,6 +1,6 @@
 import { IsDate, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
-export class AddGardenDto{
+export class AddRentDto{
     
     @IsString()
     @IsNotEmpty()

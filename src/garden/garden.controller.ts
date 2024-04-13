@@ -8,11 +8,11 @@ import { UpdateGardenDto } from "./dto/updateGarden.dto";
 import { Garden } from "./garden.model";
 
 @Controller("/api/garden")
+@UseGuards(AuthGuard)
 export class GardenController{
     constructor(private readonly gardenService: GardenService){}
 
     @Get()
-    @UseGuards(AuthGuard)
     @HttpCode(HttpStatus.OK)
     async getOtherGardens(@Req() request:any){
         const userID:string = request.payload.id;
@@ -22,7 +22,6 @@ export class GardenController{
 
     @Post()
     @HttpCode(HttpStatus.CREATED)
-    @UseGuards(AuthGuard)
     @UseInterceptors(FileInterceptor('image'))
     async addGarden(@UploadedFile() image:Express.Multer.File ,  @Body() addGradenDto:AddGardenDto , @Req() request:any){
         
@@ -41,7 +40,6 @@ export class GardenController{
 
     @Delete("/:id")
     @HttpCode(HttpStatus.OK)
-    @UseGuards(AuthGuard)
     async deleteGarden(@Param("id") gardenID:string , @Req() request:any){
         const userID:string = request.payload.id;
         await this.gardenService.checkGardenOwnership(gardenID , userID);
@@ -51,7 +49,6 @@ export class GardenController{
 
     @Patch("/:id")
     @HttpCode(HttpStatus.OK)
-    @UseGuards(AuthGuard)
     @UseInterceptors(FileInterceptor('image'))
     async updateGarden(@UploadedFile() image:Express.Multer.File , @Body() updateGardenDto:UpdateGardenDto ,@Param("id") gardenID:string , @Req() request:any){
         const userID:string = request.payload.id;

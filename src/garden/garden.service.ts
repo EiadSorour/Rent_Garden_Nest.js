@@ -1,9 +1,11 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { HttpStatus, Injectable } from "@nestjs/common";
 import { AddGardenDto } from "./dto/addGarden.dto";
 import { InjectModel } from "@nestjs/sequelize";
 import { Garden } from "./garden.model";
 import { UpdateGardenDto } from "./dto/updateGarden.dto";
 import { Op } from "sequelize";
+import { HttpStatusMessage } from "src/utils/httpStatusMessage.enum";
+import { AppError } from "src/utils/app.Error";
 
 @Injectable()
 export class GardenService{
@@ -24,7 +26,7 @@ export class GardenService{
     async getGarden(gardenID:string): Promise<Garden>{
         const garden:Garden = await this.gardenModel.findOne({where: {gardenID:gardenID}});
         if(!garden){
-            throw new HttpException("Garden doesn't exist" , HttpStatus.NOT_FOUND);
+            throw new AppError("Garden doesn't exist" , HttpStatusMessage.FAIL , HttpStatus.NOT_FOUND);
         }
         
         return garden;
@@ -38,11 +40,11 @@ export class GardenService{
     async checkGardenOwnership(gardenID: string , userID: string): Promise<void>{
         const garden:Garden = await this.gardenModel.findOne({where: {gardenID: gardenID}});
         if(!garden){
-            throw new HttpException("Garden doesn't exist" , HttpStatus.NOT_FOUND);
+            throw new AppError("Garden doesn't exist" , HttpStatusMessage.FAIL , HttpStatus.NOT_FOUND);
         }
         
         if(garden.ownerID !== userID){
-            throw new HttpException("This user doesn't own this garden" , HttpStatus.UNAUTHORIZED);
+            throw new AppError("This user doesn't own this garden" , HttpStatusMessage.FAIL , HttpStatus.UNAUTHORIZED);
         }
     }
 

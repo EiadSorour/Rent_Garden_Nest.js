@@ -31,7 +31,7 @@ export class Garden extends Model{
     @Column({allowNull:true})
     image: string;
 
-    @BelongsToMany(()=>User , ()=> Rent)
+    @BelongsToMany(()=>User , { through: {model: ()=>Rent,  unique: false } })
     renters: User[];
 
     @BelongsTo(()=>User)

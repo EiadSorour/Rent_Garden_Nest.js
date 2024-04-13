@@ -4,6 +4,8 @@ import { User } from "./user.model";
 import { UserRegisterDto } from "src/auth/dto/userRegister.dto";
 import { Garden } from "src/garden/garden.model";
 import { GardenService } from "src/garden/garden.service";
+import { AppError } from "src/utils/app.Error";
+import { HttpStatusMessage } from "src/utils/httpStatusMessage.enum";
 
 @Injectable()
 export class UserService {
@@ -28,17 +30,13 @@ export class UserService {
 
     async getUserByUsername(username: string): Promise<User> {
         const user:User =  await this.userModel.findOne({ where: { username: username } });
-        if(!user){
-            throw new HttpException("user doesn't exist" , HttpStatus.NOT_FOUND);
-        }
-
         return user;
     }
 
     async getUserById(userID: string): Promise<User> {
         const user:User =  await this.userModel.findOne({ where: { userID: userID } });
         if(!user){
-            throw new HttpException("user doesn't exist" , HttpStatus.NOT_FOUND);
+            throw new AppError("user doesn't exist", HttpStatusMessage.FAIL , HttpStatus.NOT_FOUND);
         }
 
         return user;

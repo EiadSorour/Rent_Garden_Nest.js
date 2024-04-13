@@ -21,7 +21,7 @@ export class User extends Model{
     @Column({allowNull:true , type: DataType.FLOAT})
     moneyOwned: number;
 
-    @BelongsToMany(()=>Garden , ()=> Rent)
+    @BelongsToMany(()=>Garden , { through: {model: ()=>Rent,  unique: false } })
     rentedGardens: Garden[];
 
     @HasMany(()=>Garden)

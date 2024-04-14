@@ -6,6 +6,8 @@ import { UpdateGardenDto } from "./dto/updateGarden.dto";
 import { Op } from "sequelize";
 import { HttpStatusMessage } from "src/utils/httpStatusMessage.enum";
 import { AppError } from "src/utils/app.Error";
+import * as fs from "fs";
+import { join } from "path";
 
 @Injectable()
 export class GardenService{
@@ -33,6 +35,7 @@ export class GardenService{
     }
 
     async addGarden(addGardenDto: AddGardenDto): Promise<Garden>{
+        console.log(__dirname);
         const createdGarden:Garden = await this.gardenModel.create(addGardenDto as any);
         return createdGarden.dataValues;
     }
@@ -49,17 +52,28 @@ export class GardenService{
     }
 
     async deleteGarden(gardenID:string): Promise<number>{
+        const garden:Garden = await this.getGarden(gardenID);
         const deletedGardens:number = await this.gardenModel.destroy({where: {gardenID:gardenID}});
+        fs.unlink(join(__dirname , ".." , "../uploads" , garden.image), (err)=>{
+            console.log(err);
+        })
         return deletedGardens;
     }
 
     async updateGarden(gardenID: string , updateGardenDto:UpdateGardenDto): Promise<Garden>{
+        const garden:Garden = await this.getGarden(gardenID);
         if(updateGardenDto.size){
             updateGardenDto.size = Number(updateGardenDto.size);
         }
         
         if(updateGardenDto.hourPrice){
             updateGardenDto.hourPrice = Number(updateGardenDto.hourPrice);
+        }
+
+        if(updateGardenDto.image){
+            fs.unlink(join(__dirname , ".." , "../uploads" , garden.image), (err)=>{
+                console.log(err);
+            })
         }
         
         const updatedGarden:Garden = (await this.gardenModel.update({...updateGardenDto} , {where: {gardenID:gardenID} , returning: true}))[1][0];

@@ -2,7 +2,6 @@ import { BelongsTo, BelongsToMany, Column, DataType, ForeignKey, Model, Table } 
 import { Rent } from "src/rent/rent.model";
 import { User } from "src/user/user.model";
 
-
 @Table
 export class Garden extends Model{
     

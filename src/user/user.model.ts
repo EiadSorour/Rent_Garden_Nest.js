@@ -2,7 +2,6 @@ import { BelongsToMany, Column, DataType, HasMany, Model, Table } from "sequeliz
 import { Garden } from "src/garden/garden.model";
 import { Rent } from "src/rent/rent.model";
 
-
 @Table
 export class User extends Model{
     

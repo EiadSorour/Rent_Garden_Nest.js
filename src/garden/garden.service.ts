@@ -13,15 +13,13 @@ import { join } from "path";
 export class GardenService{
     constructor(@InjectModel(Garden) private readonly gardenModel: typeof Garden){}
 
-    async getOtherGardens(userID:string): Promise<Garden[]>{
-        // Pagination here
-        const otherGardens:Garden[] = await this.gardenModel.findAll({where: {ownerID: { [Op.ne]: userID }} })
+    async getOtherGardens(userID:string, limit:number , offset:number): Promise<Garden[]>{
+        const otherGardens:Garden[] = await this.gardenModel.findAll({where: {ownerID: { [Op.ne]: userID }}, limit:limit , offset:offset })
         return otherGardens;
     }
 
-    async getUserGardens(ownerID:string): Promise<Garden[]>{
-        // Pagination here
-        const userGardens:Garden[] = await this.gardenModel.findAll({where: {ownerID:ownerID}});
+    async getUserGardens(ownerID:string, limit: number , offset:number): Promise<Garden[]>{
+        const userGardens:Garden[] = await this.gardenModel.findAll({where: {ownerID:ownerID}, limit:limit , offset:offset});
         return userGardens;
     }
 
@@ -35,7 +33,6 @@ export class GardenService{
     }
 
     async addGarden(addGardenDto: AddGardenDto): Promise<Garden>{
-        console.log(__dirname);
         const createdGarden:Garden = await this.gardenModel.create(addGardenDto as any);
         return createdGarden.dataValues;
     }
@@ -55,7 +52,7 @@ export class GardenService{
         const garden:Garden = await this.getGarden(gardenID);
         const deletedGardens:number = await this.gardenModel.destroy({where: {gardenID:gardenID}});
         fs.unlink(join(__dirname , ".." , "../uploads" , garden.image), (err)=>{
-            console.log(err);
+            throw new AppError(err.message , HttpStatusMessage.ERROR , HttpStatus.INTERNAL_SERVER_ERROR);
         })
         return deletedGardens;
     }
@@ -72,7 +69,7 @@ export class GardenService{
 
         if(updateGardenDto.image){
             fs.unlink(join(__dirname , ".." , "../uploads" , garden.image), (err)=>{
-                console.log(err);
+                throw new AppError(err.message , HttpStatusMessage.ERROR , HttpStatus.INTERNAL_SERVER_ERROR);
             })
         }
         

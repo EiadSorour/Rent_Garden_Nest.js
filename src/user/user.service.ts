@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { HttpStatus, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { User } from "./user.model";
 import { UserRegisterDto } from "src/auth/dto/userRegister.dto";
@@ -42,8 +42,7 @@ export class UserService {
         return user;
     }
 
-    async getUserGardens(userID: string): Promise<Garden[]> {
-        // Pagination here
-        return this.gardenService.getUserGardens(userID);
+    async getUserGardens(userID: string, limit:number , offset:number): Promise<Garden[]> {
+        return this.gardenService.getUserGardens(userID , limit , offset);
     }
 }

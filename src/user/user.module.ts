@@ -5,7 +5,6 @@ import { SequelizeModule } from "@nestjs/sequelize";
 import { User } from "./user.model";
 import { GardenModule } from "src/garden/garden.module";
 
-
 @Module({
     imports: [SequelizeModule.forFeature([User]) , GardenModule],
     controllers: [UserController],

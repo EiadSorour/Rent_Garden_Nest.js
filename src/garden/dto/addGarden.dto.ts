@@ -1,4 +1,4 @@
-import { IsEmpty, IsNotEmpty, IsNumberString, IsOptional, IsString, IsUUID } from "class-validator";
+import { IsEmpty, IsNotEmpty, IsNumberString, IsOptional, IsString } from "class-validator";
 
 export class AddGardenDto{
     

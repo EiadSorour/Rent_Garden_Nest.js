@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, FileTypeValidator, Get, HttpCode, HttpStatus, Param, ParseFilePipe, Patch, Post, Req, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Delete, FileTypeValidator, Get, HttpCode, HttpStatus, Param, ParseFilePipe, Patch, Post, Query, Req, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { AuthGuard } from "src/guards/Auth.guard";
 import { GardenService } from "./garden.service";
@@ -32,9 +32,9 @@ export class GardenController {
 
     @Get()
     @HttpCode(HttpStatus.OK)
-    async getOtherGardens(@Req() request: any) {
+    async getOtherGardens(@Query() query:any , @Req() request: any) {
         const userID: string = request.payload.id;
-        const otherGardens: Garden[] = await this.gardenService.getOtherGardens(userID);
+        const otherGardens: Garden[] = await this.gardenService.getOtherGardens(userID, query.limit , query.offset);
         return { status: HttpStatusMessage.SUCCESS, data: { gardens: otherGardens } }
     }
 

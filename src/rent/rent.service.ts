@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { HttpStatus, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { Rent } from "./rent.model";
 import { UpdateRentDto } from "./dto/updateRent.dto";
@@ -50,9 +50,8 @@ export class RentService{
         return rent;
     }
 
-    async getRents(): Promise<Rent[]>{
-        //Pagination here 
-        return await this.rentModel.findAll();
+    async getRents(limit:number , offset:number): Promise<Rent[]>{
+        return await this.rentModel.findAll({limit:limit , offset:offset});
     }
 
     async getRent(rentID:string): Promise<Rent>{

@@ -2,7 +2,6 @@ import { Column, DataType, ForeignKey, Model, Table } from "sequelize-typescript
 import { Garden } from "src/garden/garden.model";
 import { User } from "src/user/user.model";
 
-
 @Table({paranoid:true})
 export class Rent extends Model{
     

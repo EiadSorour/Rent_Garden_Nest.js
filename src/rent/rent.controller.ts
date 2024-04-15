@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query, Req, UseGuards } from "@nestjs/common";
 import { RentService } from "./rent.service";
 import { AdminGuard } from "src/guards/Admin.guard";
 import { UpdateRentDto } from "./dto/updateRent.dto";
@@ -23,8 +23,8 @@ export class RentController{
     @Get()
     @HttpCode(HttpStatus.OK)
     @UseGuards(AdminGuard)
-    async getAllRents(){
-        const allRents:Rent[] = await this.rentService.getRents();
+    async getAllRents(@Query() query: any){
+        const allRents:Rent[] = await this.rentService.getRents(query.limit , query.offset);
         return {status: HttpStatusMessage.SUCCESS, data: {rents: allRents}}
     }
 

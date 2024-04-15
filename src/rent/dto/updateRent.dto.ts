@@ -1,4 +1,4 @@
-import { IsDate, IsDateString, IsNumber, IsOptional, IsUUID } from "class-validator";
+import { IsDateString, IsNumber, IsOptional, IsUUID } from "class-validator";
 
 export class UpdateRentDto{
     

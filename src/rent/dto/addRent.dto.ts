@@ -1,4 +1,4 @@
-import { IsDate, IsDateString, IsEmpty, IsNotEmpty, IsNumber, IsUUID } from "class-validator";
+import { IsDate, IsDateString, IsEmpty, IsNotEmpty, IsUUID } from "class-validator";
 
 export class AddRentDto{
     

@@ -12,7 +12,7 @@ export class Garden extends Model{
     @ForeignKey(()=>User)
     ownerID: string
 
-    @Column({allowNull:false})
+    @Column({allowNull:false , unique:true})
     title: string;
     
     @Column({allowNull: false})

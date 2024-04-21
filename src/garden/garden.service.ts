@@ -6,8 +6,13 @@ import { UpdateGardenDto } from "./dto/updateGarden.dto";
 import { Op } from "sequelize";
 import { HttpStatusMessage } from "src/utils/httpStatusMessage.enum";
 import { AppError } from "src/utils/app.Error";
-import * as fs from "fs";
-import { join } from "path";
+import {v2 as cloudinary} from "cloudinary";
+
+cloudinary.config({
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.API_KEY,
+    api_secret: process.env.API_SECRET
+});
 
 @Injectable()
 export class GardenService{
@@ -51,9 +56,7 @@ export class GardenService{
     async deleteGarden(gardenID:string): Promise<number>{
         const garden:Garden = await this.getGarden(gardenID);
         const deletedGardens:number = await this.gardenModel.destroy({where: {gardenID:gardenID}});
-        fs.unlink(join(__dirname , ".." , "../uploads" , garden.image), (err)=>{
-            throw new AppError(err.message , HttpStatusMessage.ERROR , HttpStatus.INTERNAL_SERVER_ERROR);
-        })
+        await cloudinary.uploader.destroy(`${garden.ownerID}_${garden.title}_garden`);
         return deletedGardens;
     }
 
@@ -68,9 +71,7 @@ export class GardenService{
         }
 
         if(updateGardenDto.image){
-            fs.unlink(join(__dirname , ".." , "../uploads" , garden.image), (err)=>{
-                throw new AppError(err.message , HttpStatusMessage.ERROR , HttpStatus.INTERNAL_SERVER_ERROR);
-            })
+            await cloudinary.uploader.destroy(`${garden.ownerID}_${garden.title}_garden`);
         }
         
         const updatedGarden:Garden = (await this.gardenModel.update({...updateGardenDto} , {where: {gardenID:gardenID} , returning: true}))[1][0];

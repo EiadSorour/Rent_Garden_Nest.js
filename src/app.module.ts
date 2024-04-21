@@ -7,6 +7,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { ConfigModule } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { TestModule } from './test/test.module';
 
 @Module({
   imports: [
@@ -24,7 +25,7 @@ import { join } from 'path';
       autoLoadModels: true,
       synchronize: true,
     }),
-    UserModule , RentModule , GardenModule , AuthModule],
+    UserModule , RentModule , GardenModule , AuthModule, TestModule],
   controllers: [],
   providers: [],
 })

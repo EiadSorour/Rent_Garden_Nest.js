@@ -7,11 +7,15 @@ import { HttpStatusMessage } from "src/utils/httpStatusMessage.enum";
 import { UpdateGardenDto } from "./dto/updateGarden.dto";
 import { Garden } from "./garden.model";
 import { diskStorage } from "multer";
+import {v2 as cloudinary} from "cloudinary";
+
+cloudinary.config({
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.API_KEY,
+    api_secret: process.env.API_SECRET
+});
 
 const storage = diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, './uploads')
-    },
     filename: function (req, file, cb) {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
         cb(null, uniqueSuffix + `.${file.mimetype.split("/")[1]}`)
@@ -40,14 +44,19 @@ export class GardenController {
 
     @Post()
     @HttpCode(HttpStatus.CREATED)
-    @UseInterceptors(FileInterceptor('image', {storage: storage}))
+    @UseInterceptors(FileInterceptor('image' , {storage:storage})) 
     async addGarden(@UploadedFile(fileValidation) image: Express.Multer.File, @Body() addGradenDto: AddGardenDto, @Req() request: any) {
 
         addGradenDto.ownerID = request.payload.id;
         addGradenDto.size = Number(addGradenDto.size);
         addGradenDto.hourPrice = Number(addGradenDto.hourPrice);
+
         if (image) {
-            addGradenDto.image = image.filename;
+            const result = await cloudinary.uploader.upload(
+                image.path,
+                { public_id: `${addGradenDto.ownerID}_${addGradenDto.title}_garden` },
+            );
+            addGradenDto.image = result.secure_url;
         } else {
             addGradenDto.image = null;
         }
@@ -73,7 +82,11 @@ export class GardenController {
         await this.gardenService.checkGardenOwnership(gardenID, userID);
         
         if (image) {
-            updateGardenDto.image = image.filename;
+            const result = await cloudinary.uploader.upload(
+                image.path,
+                { public_id: `${userID}_${updateGardenDto.title}_garden` },
+            );
+            updateGardenDto.image = result.secure_url;
         }
 
         const updatedGarden: Garden = await this.gardenService.updateGarden(gardenID, updateGardenDto);

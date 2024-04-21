@@ -4,24 +4,23 @@ import { Rent } from "./rent.model";
 import { UpdateRentDto } from "./dto/updateRent.dto";
 import { AddRentDto } from "./dto/addRent.dto";
 import { GardenService } from "src/garden/garden.service";
-import { UserService } from "src/user/user.service";
 import { AppError } from "src/utils/app.Error";
 import { HttpStatusMessage } from "src/utils/httpStatusMessage.enum";
+const stripe = require("stripe")(process.env.STRIPE_PRIVATE_KEY);
 
 @Injectable()
 export class RentService{
     constructor(
         @InjectModel(Rent) private readonly rentModel: typeof Rent , 
         private readonly gardenService:GardenService,
-        private readonly userService:UserService
     ){}
 
-    async addRent(addRentDto: AddRentDto): Promise<Rent>{
+    async makePayment(addRentDto: AddRentDto): Promise<string>{
         
         addRentDto.fromDate = new Date(addRentDto.fromDate)
         addRentDto.toDate = new Date(addRentDto.toDate)
 
-        // check if rent is available
+        // check if garden is available
         const desiredGardenRents:Rent[] = await this.rentModel.findAll({where: {gardenID:addRentDto.gardenID}});
         const fromDate1 = addRentDto.fromDate;
         const toDate1 = addRentDto.toDate;
@@ -33,21 +32,34 @@ export class RentService{
             }
         });
         
-        // calculate rent cost
+        // calculate rent cost in cents
         const rentedHours = Math.abs(addRentDto.fromDate.getTime() - addRentDto.toDate.getTime()) / (60*60*1000);
-        const hourPrice = (await this.gardenService.getGarden(addRentDto.gardenID)).hourPrice;
+        const gardenToRent = await this.gardenService.getGarden(addRentDto.gardenID);
+        const hourPrice = gardenToRent.hourPrice;
         const cost = rentedHours*hourPrice;
         addRentDto.cost = cost;
         
-        // take cost from the user
-        const moneyOwned:number = (await this.userService.getUserById(addRentDto.userID)).moneyOwned;
-        if(moneyOwned < cost){
-            throw new AppError("User doesn't have enough money to make this rent" , HttpStatusMessage.FAIL , HttpStatus.BAD_REQUEST);
-        }
-        await this.userService.withdrawMoney(addRentDto.userID , cost);
+        // make payment
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ["card"],
+            mode: "payment",
+            line_items: [
+                {
+                    price_data:{
+                        currency: "egp",
+                        product_data:{
+                            name: gardenToRent.title
+                        },
+                        unit_amount: addRentDto.cost*100
+                    },
+                    quantity: 1
+                }
+            ],
+            success_url: "http://localhost:3000/test/response",
+            cancel_url: "http://localhost:3000/test/cancel",
+        });
 
-        const rent = await this.rentModel.create(addRentDto as any);
-        return rent;
+        return session.url;
     }
 
     async getRents(limit:number , offset:number): Promise<Rent[]>{
@@ -65,7 +77,7 @@ export class RentService{
             throw new AppError("This rent doesn't exist" , HttpStatusMessage.FAIL , HttpStatus.NOT_FOUND);
         }
         // Money return to the user
-        await this.userService.returnMoney(rent.userID as any , rent.cost);
+        
 
         const deletedRents:number = await this.rentModel.destroy({where: {rentID:rentID}});
         return deletedRents;

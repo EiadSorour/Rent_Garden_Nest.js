@@ -14,10 +14,10 @@ export class RentController{
     @Post()
     @HttpCode(HttpStatus.CREATED)
     @UseGuards(AuthGuard)
-    async addRent(@Body() addRentDto:AddRentDto , @Req() request:any){
+    async makePayment(@Body() addRentDto:AddRentDto , @Req() request:any){
         addRentDto.userID = request.payload.id;
-        const createdRent:Rent = await this.rentService.addRent(addRentDto);
-        return {status: HttpStatusMessage.SUCCESS, data: {rent: createdRent}}
+        const paymentUrl = await this.rentService.makePayment(addRentDto);
+        return {status: HttpStatusMessage.SUCCESS, data: {paymentUrl: paymentUrl}}
     }
 
     @Get()

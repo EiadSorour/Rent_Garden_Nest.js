@@ -18,16 +18,6 @@ export class UserService {
         await this.userModel.create(userRegisterDto as any);
     }
 
-    async withdrawMoney(userID:string , amount: number): Promise<void>{
-        const newBalance: number = ((await this.getUserById(userID)).moneyOwned) - amount;
-        await this.userModel.update({moneyOwned:newBalance} , {where: {userID:userID}} );
-    }
-
-    async returnMoney(userID:string , amount: number): Promise<void>{
-        const newBalance: number = ((await this.getUserById(userID)).moneyOwned) + amount;
-        await this.userModel.update({moneyOwned:newBalance} , {where: {userID:userID}} );
-    }
-
     async getUserByUsername(username: string): Promise<User> {
         const user:User =  await this.userModel.findOne({ where: { username: username } });
         return user;

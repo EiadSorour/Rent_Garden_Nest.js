@@ -5,9 +5,10 @@ import { Rent } from "./rent.model";
 import { SequelizeModule } from "@nestjs/sequelize";
 import { GardenModule } from "src/garden/garden.module";
 import { UserModule } from "src/user/user.module";
+import { ConfigModule } from "@nestjs/config";
 
 @Module({
-    imports: [SequelizeModule.forFeature([Rent]) , GardenModule , UserModule],
+    imports: [ConfigModule.forRoot(), SequelizeModule.forFeature([Rent]) , GardenModule],
     controllers: [RentController],
     providers: [RentService],
     exports: []

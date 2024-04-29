@@ -39,8 +39,6 @@ export class RentService{
         const cost = rentedHours*hourPrice;
         addRentDto.cost = cost;
         
-        console.log(addRentDto);
-        
 
         // make payment
         const session = await stripe.checkout.sessions.create({
@@ -85,8 +83,8 @@ export class RentService{
         if(!rent){
             throw new AppError("This rent doesn't exist" , HttpStatusMessage.FAIL , HttpStatus.NOT_FOUND);
         }
-        // Money return to the user
         
+        // Money return to the user
 
         const deletedRents:number = await this.rentModel.destroy({where: {rentID:rentID}});
         return deletedRents;

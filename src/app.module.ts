@@ -5,6 +5,7 @@ import { GardenModule } from './garden/garden.module';
 import { AuthModule } from './auth/auth.module';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { ConfigModule } from '@nestjs/config';
+import { WebHookModule } from './webhook/webhook.module';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { ConfigModule } from '@nestjs/config';
       autoLoadModels: true,
       synchronize: true,
     }),
-    UserModule , RentModule , GardenModule , AuthModule],
+    UserModule , RentModule , GardenModule , AuthModule, WebHookModule],
   controllers: [],
   providers: [],
 })

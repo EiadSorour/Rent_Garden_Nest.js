@@ -6,7 +6,7 @@ import { Garden } from "./garden.model";
 import { ConfigModule } from "@nestjs/config";
 
 @Module({
-    imports: [SequelizeModule.forFeature([Garden]), ConfigModule.forRoot()],
+    imports: [ConfigModule.forRoot(), SequelizeModule.forFeature([Garden])],
     controllers: [GardenController],
     providers: [GardenService],
     exports: [GardenService]

@@ -16,7 +16,7 @@ export class RentService{
     ){}
 
     async makePayment(addRentDto: AddRentDto): Promise<string>{
-        
+
         addRentDto.fromDate = new Date(addRentDto.fromDate)
         addRentDto.toDate = new Date(addRentDto.toDate)
 
@@ -38,9 +38,6 @@ export class RentService{
         const hourPrice = gardenToRent.hourPrice;
         const cost = rentedHours*hourPrice;
         addRentDto.cost = cost;
-        
-        console.log(addRentDto);
-        
 
         // make payment
         const session = await stripe.checkout.sessions.create({
@@ -72,7 +69,7 @@ export class RentService{
     }
 
     async getRents(limit:number , offset:number): Promise<Rent[]>{
-        return await this.rentModel.findAll({limit:limit , offset:offset});
+        return await this.rentModel.findAll({limit:limit , offset:(offset-1)});
     }
 
     async getRent(rentID:string): Promise<Rent>{
@@ -85,8 +82,8 @@ export class RentService{
         if(!rent){
             throw new AppError("This rent doesn't exist" , HttpStatusMessage.FAIL , HttpStatus.NOT_FOUND);
         }
+
         // Money return to the user
-        
 
         const deletedRents:number = await this.rentModel.destroy({where: {rentID:rentID}});
         return deletedRents;

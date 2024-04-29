@@ -24,7 +24,7 @@ export class WebHookController {
 
     @Get("/response")
     async response(@Req() req:any){
-        return "payment completed successfully";               
+        return "payment completed successfully";
     }
 
     @Get("/cancel")

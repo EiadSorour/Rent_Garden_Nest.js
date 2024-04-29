@@ -19,12 +19,12 @@ export class GardenService {
     }
 
     async getOtherGardens(userID: string, limit: number, offset: number): Promise<Garden[]> {
-        const otherGardens: Garden[] = await this.gardenModel.findAll({ where: { ownerID: { [Op.ne]: userID } }, limit: limit, offset: offset })
+        const otherGardens: Garden[] = await this.gardenModel.findAll({ where: { ownerID: { [Op.ne]: userID } }, limit: limit, offset: (offset - 1) })
         return otherGardens;
     }
 
     async getUserGardens(ownerID: string, limit: number, offset: number): Promise<Garden[]> {
-        const userGardens: Garden[] = await this.gardenModel.findAll({ where: { ownerID: ownerID }, limit: limit, offset: offset });
+        const userGardens: Garden[] = await this.gardenModel.findAll({ where: { ownerID: ownerID }, limit: limit, offset: (offset - 1) });
         return userGardens;
     }
 

@@ -8,6 +8,7 @@ import { UpdateGardenDto } from "./dto/updateGarden.dto";
 import { Garden } from "./garden.model";
 import { diskStorage } from "multer";
 import { v2 as cloudinary } from "cloudinary";
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiQuery } from "@nestjs/swagger";
 
 const storage = diskStorage({
     filename: function (req, file, cb) {
@@ -23,6 +24,7 @@ const fileValidation = new ParseFilePipe({
     fileIsRequired: false,
 })
 
+@ApiBearerAuth()
 @Controller("/api/garden")
 @UseGuards(AuthGuard)
 export class GardenController {
@@ -36,6 +38,8 @@ export class GardenController {
 
     @Get()
     @HttpCode(HttpStatus.OK)
+    @ApiQuery({ name: "limit", required: true, type: Number })
+    @ApiQuery({ name: "offset", required: true, type: Number })
     async getOtherGardens(@Query() query: any, @Req() request: any) {
         const userID: string = request.payload.id;
         const otherGardens: Garden[] = await this.gardenService.getOtherGardens(userID, query.limit, query.offset);
@@ -45,6 +49,28 @@ export class GardenController {
     @Post()
     @HttpCode(HttpStatus.CREATED)
     @UseInterceptors(FileInterceptor('image', { storage: storage }))
+    @ApiConsumes('multipart/form-data')
+    @ApiBody({
+        schema: {
+            type: 'object',
+            properties: {
+                ownerID: {
+                    description: "UUID",
+                    readOnly: true
+                },
+                title: { type: "string" },
+                description: {type: "string"},
+                size: {type: "number"},
+                location: {type: "string"},
+                hourPrice: {type: "number", description: "garden price per hour"},
+                image: {
+                    type: 'string',
+                    format: 'binary',
+                    description: "garden image",
+                },
+            },
+        },
+    })
     async addGarden(@UploadedFile(fileValidation) image: Express.Multer.File, @Body() addGradenDto: AddGardenDto, @Req() request: any) {
 
         addGradenDto.ownerID = request.payload.id;
@@ -77,6 +103,24 @@ export class GardenController {
     @Patch("/:id")
     @HttpCode(HttpStatus.OK)
     @UseInterceptors(FileInterceptor('image', { storage: storage }))
+    @ApiConsumes('multipart/form-data')
+    @ApiBody({
+        schema: {
+            type: 'object',
+            properties: {
+                title: { type: "string" },
+                description: {type: "string"},
+                size: {type: "number"},
+                location: {type: "string"},
+                hourPrice: {type: "number", description: "garden price per hour"},
+                image: {
+                    type: 'string',
+                    format: 'binary',
+                    description: "garden image",
+                },
+            },
+        },
+    })
     async updateGarden(@UploadedFile(fileValidation) image: Express.Multer.File, @Body() updateGardenDto: UpdateGardenDto, @Param("id") gardenID: string, @Req() request: any) {
         const userID: string = request.payload.id;
         await this.gardenService.checkGardenOwnership(gardenID, userID);

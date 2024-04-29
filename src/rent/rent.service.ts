@@ -32,13 +32,16 @@ export class RentService{
             }
         });
         
-        // calculate rent cost in cents
+        // calculate rent cost
         const rentedHours = Math.abs(addRentDto.fromDate.getTime() - addRentDto.toDate.getTime()) / (60*60*1000);
         const gardenToRent = await this.gardenService.getGarden(addRentDto.gardenID);
         const hourPrice = gardenToRent.hourPrice;
         const cost = rentedHours*hourPrice;
         addRentDto.cost = cost;
         
+        console.log(addRentDto);
+        
+
         // make payment
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ["card"],
@@ -46,7 +49,7 @@ export class RentService{
             line_items: [
                 {
                     price_data:{
-                        currency: "egp",
+                        currency: "egp", 
                         product_data:{
                             name: gardenToRent.title
                         },
@@ -55,15 +58,21 @@ export class RentService{
                     quantity: 1
                 }
             ],
-            success_url: "http://localhost:3000/test/response",
-            cancel_url: "http://localhost:3000/test/cancel",
+            metadata: {...addRentDto},
+            success_url: "http://localhost:3000/response",
+            cancel_url: "http://localhost:3000/cancel",
         });
 
         return session.url;
     }
 
+    async addRent(addRentDto:AddRentDto): Promise<Rent>{
+        const createdRent:Rent = await this.rentModel.create(addRentDto as any);
+        return createdRent;
+    }
+
     async getRents(limit:number , offset:number): Promise<Rent[]>{
-        return await this.rentModel.findAll({limit:limit , offset:offset});
+        return await this.rentModel.findAll({limit:limit , offset:(offset-1)});
     }
 
     async getRent(rentID:string): Promise<Rent>{

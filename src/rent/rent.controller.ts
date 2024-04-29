@@ -6,7 +6,9 @@ import { HttpStatusMessage } from "src/utils/httpStatusMessage.enum";
 import { Rent } from "./rent.model";
 import { AuthGuard } from "src/guards/Auth.guard";
 import { AddRentDto } from "./dto/addRent.dto";
+import { ApiBearerAuth, ApiQuery } from "@nestjs/swagger";
 
+@ApiBearerAuth()
 @Controller("/api/rent")
 export class RentController{
     constructor(private readonly rentService:RentService){}
@@ -23,6 +25,8 @@ export class RentController{
     @Get()
     @HttpCode(HttpStatus.OK)
     @UseGuards(AdminGuard)
+    @ApiQuery({name: "limit", required: true , type: Number})
+    @ApiQuery({name: "offset" , required: true , type: Number})
     async getAllRents(@Query() query: any){
         const allRents:Rent[] = await this.rentService.getRents(query.limit , query.offset);
         return {status: HttpStatusMessage.SUCCESS, data: {rents: allRents}}

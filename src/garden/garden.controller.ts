@@ -7,13 +7,7 @@ import { HttpStatusMessage } from "src/utils/httpStatusMessage.enum";
 import { UpdateGardenDto } from "./dto/updateGarden.dto";
 import { Garden } from "./garden.model";
 import { diskStorage } from "multer";
-import {v2 as cloudinary} from "cloudinary";
-
-cloudinary.config({
-    cloud_name: process.env.CLOUD_NAME,
-    api_key: process.env.CLOUD_API_KEY,
-    api_secret: process.env.CLOUD_API_SECRET
-});
+import { v2 as cloudinary } from "cloudinary";
 
 const storage = diskStorage({
     filename: function (req, file, cb) {
@@ -32,19 +26,25 @@ const fileValidation = new ParseFilePipe({
 @Controller("/api/garden")
 @UseGuards(AuthGuard)
 export class GardenController {
-    constructor(private readonly gardenService: GardenService) { }
+    constructor(private readonly gardenService: GardenService) {
+        cloudinary.config({
+            cloud_name: process.env.CLOUD_NAME,
+            api_key: process.env.CLOUD_API_KEY,
+            api_secret: process.env.CLOUD_API_SECRET
+        });
+    }
 
     @Get()
     @HttpCode(HttpStatus.OK)
-    async getOtherGardens(@Query() query:any , @Req() request: any) {
+    async getOtherGardens(@Query() query: any, @Req() request: any) {
         const userID: string = request.payload.id;
-        const otherGardens: Garden[] = await this.gardenService.getOtherGardens(userID, query.limit , query.offset);
+        const otherGardens: Garden[] = await this.gardenService.getOtherGardens(userID, query.limit, query.offset);
         return { status: HttpStatusMessage.SUCCESS, data: { gardens: otherGardens } }
     }
 
     @Post()
     @HttpCode(HttpStatus.CREATED)
-    @UseInterceptors(FileInterceptor('image' , {storage:storage})) 
+    @UseInterceptors(FileInterceptor('image', { storage: storage }))
     async addGarden(@UploadedFile(fileValidation) image: Express.Multer.File, @Body() addGradenDto: AddGardenDto, @Req() request: any) {
 
         addGradenDto.ownerID = request.payload.id;
@@ -61,8 +61,8 @@ export class GardenController {
             addGradenDto.image = null;
         }
 
-        const createdGarden:Garden = await this.gardenService.addGarden(addGradenDto);
-        return {status: HttpStatusMessage.SUCCESS , data: {garden: createdGarden}}
+        const createdGarden: Garden = await this.gardenService.addGarden(addGradenDto);
+        return { status: HttpStatusMessage.SUCCESS, data: { garden: createdGarden } }
     }
 
     @Delete("/:id")
@@ -80,7 +80,7 @@ export class GardenController {
     async updateGarden(@UploadedFile(fileValidation) image: Express.Multer.File, @Body() updateGardenDto: UpdateGardenDto, @Param("id") gardenID: string, @Req() request: any) {
         const userID: string = request.payload.id;
         await this.gardenService.checkGardenOwnership(gardenID, userID);
-        
+
         if (image) {
             const result = await cloudinary.uploader.upload(
                 image.path,

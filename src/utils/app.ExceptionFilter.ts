@@ -10,12 +10,13 @@ export class AppExceptionFilter implements ExceptionFilter {
         const request = ctx.getRequest<Request>();
         const status = exception.getStatus();
         const exceptionResponse:any = exception.getResponse();
+        
 
         response
-            .status(exceptionResponse.statusCode)
+            .status(exceptionResponse.statusCode || exception.getStatus())
             .json({
                 status: exceptionResponse.status || HttpStatusMessage.ERROR,
-                message: exceptionResponse.message
+                message: exceptionResponse.message || exceptionResponse
             });
     }
 }

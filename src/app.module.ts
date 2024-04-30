@@ -6,22 +6,33 @@ import { AuthModule } from './auth/auth.module';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { ConfigModule } from '@nestjs/config';
 import { WebHookModule } from './webhook/webhook.module';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({isGlobal: true}),
+    ConfigModule.forRoot({ isGlobal: true }),
     SequelizeModule.forRoot({
       dialect: process.env.DIALECT_USERNAME as any,
       host: process.env.HOST,
       port: process.env.PORT as any,
       username: process.env.DIALECT_USERNAME as any,
-      password: process.env.PASSWORD as any, 
+      password: process.env.PASSWORD as any,
       database: process.env.DATABASE as any,
       autoLoadModels: true,
       synchronize: true,
     }),
-    UserModule , RentModule , GardenModule , AuthModule, WebHookModule],
+    ThrottlerModule.forRoot([{
+      ttl: Number(process.env.TIME_TO_LIVE),
+      limit: Number(process.env.LIMIT),
+    }]), 
+    UserModule, RentModule, GardenModule, AuthModule, WebHookModule],
   controllers: [],
-  providers: [],
-})
-export class AppModule {}
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard
+    }
+  ],
+}) 
+export class AppModule { }

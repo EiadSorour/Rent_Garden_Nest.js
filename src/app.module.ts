@@ -13,10 +13,10 @@ import { APP_GUARD } from '@nestjs/core';
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     SequelizeModule.forRoot({
-      dialect: process.env.DIALECT_USERNAME as any,
+      dialect: process.env.DIALECT as any,
       host: process.env.HOST,
       port: process.env.PORT as any,
-      username: process.env.DIALECT_USERNAME as any,
+      username: process.env.USERNAME as any,
       password: process.env.PASSWORD as any,
       database: process.env.DATABASE as any,
       autoLoadModels: true,
